@@ -4,3 +4,10 @@ main: io.github.thesowut.hearthstone.Hearthstone
 api-version: 1.19
 authors: [ TheSowut ]
 description: Teleport with style
+commands:
+  get:
+    description: Get a hearthstone
+    usage: /<command>
+  sethome:
+    description: Set home for hearthstone
+    usage: /<command>
