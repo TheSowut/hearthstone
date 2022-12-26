@@ -1,0 +1,6 @@
+name: Hearthstone
+version: '${project.version}'
+main: io.github.thesowut.hearthstone.Hearthstone
+api-version: 1.19
+authors: [ TheSowut ]
+description: Teleport with style
