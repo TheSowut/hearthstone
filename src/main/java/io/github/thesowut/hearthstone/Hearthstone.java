@@ -19,8 +19,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Arrays;
 
 public final class Hearthstone extends JavaPlugin {
-    private FileConfiguration _config = this.getConfig();
-    private ItemStack _hearthstone = this._getHearthStone();
+    private final FileConfiguration _config = this.getConfig();
+    private final ItemStack _hearthstone = this._getHearthStone();
 
     private final String pluginTitle = ChatColor.DARK_GRAY
             + "[" + ChatColor.DARK_GREEN
@@ -38,6 +38,13 @@ public final class Hearthstone extends JavaPlugin {
         // find a better way to do this
         getCommand("get").setExecutor(new HearthStoneCommands());
         getCommand("sethome").setExecutor(new HearthStoneCommands());
+
+        // TODO
+        // instead of using config for player homes, create separate file inside userdata dir
+        // use config to for the following:
+        // number of hearthstone usages
+        // hearthstone material
+        // cooldown between usages length
 
         _config.options().copyDefaults(true);
         saveConfig();
@@ -63,6 +70,12 @@ public final class Hearthstone extends JavaPlugin {
         public void onPlayer(PlayerInteractEvent event) {
             System.out.println("EVENT action");
             System.out.println(event.getAction());
+
+            // TODO
+            // Add cooldown to hearthstone usage
+            // Add particles when using hearthstone
+            // Add channeling
+            // Movement or pressing again should cancel channeling
 
             Player player = event.getPlayer();
             Location playerHomeLocation = _config.getLocation(player.getName().toLowerCase());
@@ -111,7 +124,7 @@ public final class Hearthstone extends JavaPlugin {
                     break;
 
                 case "sethome":
-                    if (player.isFlying()) {
+                    if (!_canUseHearthstone(player)) {
                         player.sendMessage(pluginTitle + ChatColor.RED + "Must be grounded to perform that!");
                         break;
                     }
@@ -127,6 +140,7 @@ public final class Hearthstone extends JavaPlugin {
     }
 
     private boolean _canUseHearthstone(Player player) {
-        return !player.isSwimming() && !(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR);
+        return !player.isSwimming()
+                && !(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR);
     }
 }
