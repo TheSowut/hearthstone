@@ -31,6 +31,7 @@ public class HearthstoneListener implements Listener {
         // Add particles when using hearthstone
         // Add channeling
         // Movement or pressing again should cancel channeling
+        // make item undroppable
 
         _hearthstoneHelper.teleportPlayer(event);
     }

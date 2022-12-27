@@ -15,11 +15,11 @@ import java.util.Arrays;
 public class HearthstoneHelper {
     public final ItemStack hearthstoneItem = this.getHearthstone();
     private final FileConfiguration _config;
-    private final String _pluginTitle;
+    private final PluginHelper _pluginHelper;
 
-    public HearthstoneHelper(FileConfiguration config, String pluginTitle) {
+    public HearthstoneHelper(FileConfiguration config, PluginHelper pluginHelper) {
         this._config = config;
-        this._pluginTitle = pluginTitle;
+        this._pluginHelper = pluginHelper;
     }
 
     /**
@@ -48,20 +48,18 @@ public class HearthstoneHelper {
         boolean isAbleToHearthstone = this.canUseHearthstone(player);
 
         if (!this.canUseHearthstone(player)) {
-            player.sendMessage(_pluginTitle + ChatColor.RED + "Must be grounded to perform that!");
+            _pluginHelper.sendNotGroundedMessage(player);
             return;
         }
 
         if (playerHomeLocation == null && isRightClickPressed) {
-            player.sendMessage(_pluginTitle + ChatColor.RED + "The Hearthstone doesn't lead anywhere!");
+            _pluginHelper.sendNullHomeMessage(player);
             return;
         }
 
         if (event.getItem().equals(this.hearthstoneItem) && isAbleToHearthstone && isRightClickPressed) {
-            // TODO
-            // make item undroppable
             player.teleport(playerHomeLocation);
-            player.sendMessage(ChatColor.GOLD + (ChatColor.ITALIC + "Whoosh."));
+            _pluginHelper.sendTeleportationMessage(player);
         }
     }
 
