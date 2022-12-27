@@ -1,12 +1,11 @@
-package io.github.thesowut.hearthstone;
+package io.github.thesowut.hearthstone.handler;
 
+import io.github.thesowut.hearthstone.commands.HearthstoneCommands;
+import io.github.thesowut.hearthstone.helpers.HearthstoneHelper;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,23 +20,26 @@ import java.util.Arrays;
 public final class Hearthstone extends JavaPlugin {
     private final FileConfiguration _config = this.getConfig();
     private final ItemStack _hearthstone = this._getHearthStone();
-
-    private final String pluginTitle = ChatColor.DARK_GRAY
+    private final HearthstoneHelper _hearthstoneHelper = new HearthstoneHelper();
+    private final String _pluginTitle = ChatColor.DARK_GRAY
             + "[" + ChatColor.DARK_GREEN
             + "HearthStone"
             + ChatColor.DARK_GRAY + "] "
             + ChatColor.WHITE;
 
+    private final HearthstoneCommands _hearthstoneCommands =
+            new HearthstoneCommands(_config, _hearthstone, _pluginTitle, _hearthstoneHelper);
+
     @Override
     public void onEnable() {
         // Plugin startup logic
-        getServer().getConsoleSender().sendMessage(pluginTitle + ChatColor.GREEN + "Plugin enabled.");
+        getServer().getConsoleSender().sendMessage(_pluginTitle + ChatColor.GREEN + "Plugin enabled.");
         getServer().getPluginManager().registerEvents(new HearthstoneListener(), this);
 
         // TODO
         // find a better way to do this
-        getCommand("get").setExecutor(new HearthStoneCommands());
-        getCommand("sethome").setExecutor(new HearthStoneCommands());
+        getCommand("get").setExecutor(_hearthstoneCommands);
+        getCommand("sethome").setExecutor(_hearthstoneCommands);
 
         // TODO
         // instead of using config for player homes, create separate file inside userdata dir
@@ -53,7 +55,7 @@ public final class Hearthstone extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        getServer().getConsoleSender().sendMessage(pluginTitle + ChatColor.RED + "Plugin disabled.");
+        getServer().getConsoleSender().sendMessage(_pluginTitle + ChatColor.RED + "Plugin disabled.");
     }
 
     private ItemStack _getHearthStone() {
@@ -82,65 +84,22 @@ public final class Hearthstone extends JavaPlugin {
             boolean isRightClickPressed = event.getAction().toString().contains("RIGHT_CLICK");
             boolean isPlayerGrounded = !player.isSwimming() && !(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR);
 
-            if (!_canUseHearthstone(player)) {
-                player.sendMessage(pluginTitle + ChatColor.RED + "Must be grounded to perform that!");
+            if (!_hearthstoneHelper.canUseHearthstone(player)) {
+                player.sendMessage(_pluginTitle + ChatColor.RED + "Must be grounded to perform that!");
                 return;
             }
 
             if (playerHomeLocation == null && isRightClickPressed) {
-                player.sendMessage(pluginTitle + ChatColor.RED + "The Hearthstone doesn't lead anywhere!");
+                player.sendMessage(_pluginTitle + ChatColor.RED + "The Hearthstone doesn't lead anywhere!");
                 return;
             }
 
             if (event.getItem().equals(_hearthstone) && isPlayerGrounded && isRightClickPressed) {
                 // TODO
                 // make item undroppable
-
                 player.teleport(playerHomeLocation);
                 player.sendMessage(ChatColor.GOLD + (ChatColor.ITALIC + "Whoosh."));
             }
         }
-    }
-
-    public class HearthStoneCommands implements CommandExecutor {
-        @Override
-        public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-            if (!(sender instanceof Player)) {
-                return true;
-            }
-
-            Player player = ((Player) sender).getPlayer();
-            String command = cmd.getName().toLowerCase();
-
-            switch (command) {
-                case "get":
-                    if (player.getInventory().contains(_hearthstone)) {
-                        player.sendMessage(pluginTitle + ChatColor.RED + "You can only carry a single Hearthstone!");
-                        break;
-                    }
-
-                    player.getInventory().addItem(_hearthstone);
-                    player.sendMessage(pluginTitle + ChatColor.GREEN + "A Hearthstone appears in your pocket!");
-                    break;
-
-                case "sethome":
-                    if (!_canUseHearthstone(player)) {
-                        player.sendMessage(pluginTitle + ChatColor.RED + "Must be grounded to perform that!");
-                        break;
-                    }
-
-                    _config.set(player.getName().toLowerCase(), player.getLocation());
-                    player.sendMessage(pluginTitle + ChatColor.GREEN + "You new home has been set.");
-                    saveConfig();
-                    break;
-            }
-
-            return true;
-        }
-    }
-
-    private boolean _canUseHearthstone(Player player) {
-        return !player.isSwimming()
-                && !(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR);
     }
 }

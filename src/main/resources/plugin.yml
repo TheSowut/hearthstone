@@ -1,6 +1,6 @@
 name: Hearthstone
 version: '${project.version}'
-main: io.github.thesowut.hearthstone.Hearthstone
+main: io.github.thesowut.hearthstone.handler.Hearthstone
 api-version: 1.19
 authors: [ TheSowut ]
 description: Teleport with style
@@ -8,6 +8,11 @@ commands:
   get:
     description: Get a hearthstone
     usage: /<command>
+    permission: hearthstone.get
+    permission-message: You do not have permission.
   sethome:
     description: Set home for hearthstone
     usage: /<command>
+
+    permission: hearthstone.sethome
+    permission-message: You do not have permission.
