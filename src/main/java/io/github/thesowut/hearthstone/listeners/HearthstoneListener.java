@@ -3,9 +3,9 @@ package io.github.thesowut.hearthstone.listeners;
 import io.github.thesowut.hearthstone.helpers.HearthstoneHelper;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.jetbrains.annotations.NotNull;
 
 public class HearthstoneListener implements Listener {
     private final HearthstoneHelper _hearthstoneHelper;
@@ -15,12 +15,9 @@ public class HearthstoneListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerChat(AsyncPlayerChatEvent event) {
-        event.getPlayer().sendMessage("1");
-    }
-
-    @EventHandler
-    public void onPlayer(PlayerInteractEvent event) {
+    public void onPlayer(@NotNull PlayerInteractEvent event) {
+        // In case the player isn't holding anything.
+        if (event.getItem() == null) return;
         // If the player is holding the Hearthstone in the offhand, do nothing.
         if (event.getHand() != EquipmentSlot.HAND) return;
         // If the player isn't right-clicking with a Hearthstone, do nothing.
