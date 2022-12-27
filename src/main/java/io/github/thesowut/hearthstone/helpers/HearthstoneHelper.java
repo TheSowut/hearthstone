@@ -30,8 +30,8 @@ public class HearthstoneHelper {
     public ItemStack getHearthstone() {
         ItemStack _item = new ItemStack(Material.ECHO_SHARD);
         ItemMeta _meta = _item.getItemMeta();
-        _meta.setDisplayName(ChatColor.DARK_PURPLE + "Hearthstone");
-        _meta.setLore(Arrays.asList(ChatColor.GOLD + "Inscribed with magical runes."));
+        _meta.setDisplayName(ChatColor.DARK_GREEN + (ChatColor.BOLD + "Hearthstone"));
+        _meta.setLore(Arrays.asList(ChatColor.RED + "Inscribed with magical runes."));
         _item.setItemMeta(_meta);
         return _item;
     }
