@@ -76,19 +76,25 @@ public class HearthstoneHelper {
         }
 
         if (event.getItem() != null && event.getItem().equals(this.hearthstoneItem) && isAbleToHearthstone && isRightClickPressed) {
-            // Start listening for movement.
-            _main.getServer().getPluginManager().registerEvents(_movementListener, _main);
-
+            // Attach a new listener for player movement.
+            // Avoid attaching if there is a listener present, use it instead.
+            if (playersBeingTeleported.size() < 1) {
+                _main.getServer().getPluginManager().registerEvents(_movementListener, _main);
+            }
             playersBeingTeleported.put(player.getUniqueId(), TeleportationState.STARTED);
             // TODO get teleportation delay from config after moving players userdata
             int delay = 5;
             int taskNumber = Bukkit.getScheduler().scheduleSyncDelayedTask(_main, () -> {
-                HandlerList.unregisterAll(_movementListener);
                 playersBeingTeleported.remove(player.getUniqueId());
                 teleportationTasks.remove(player.getUniqueId());
 
                 player.teleport(playerHomeLocation);
                 _pluginHelper.sendTeleportationMessage(player, TeleportationState.SUCCESS);
+
+                // If there are no players using the hearthstone, remove the listener.
+                if (playersBeingTeleported.size() < 1) {
+                    HandlerList.unregisterAll(_movementListener);
+                }
             }, 20 * delay);
 
             _pluginHelper.sendTeleportationMessage(player, TeleportationState.STARTED);
@@ -131,6 +137,8 @@ public class HearthstoneHelper {
 
         playersBeingTeleported.remove(player.getUniqueId());
         teleportationTasks.remove(player.getUniqueId());
-        HandlerList.unregisterAll(_movementListener);
+        if (playersBeingTeleported.size() < 1) {
+            HandlerList.unregisterAll(_movementListener);
+        }
     }
 }
