@@ -1,9 +1,9 @@
 package io.github.thesowut.hearthstone.listeners;
 
+import io.github.thesowut.hearthstone.helpers.FileHelper;
 import io.github.thesowut.hearthstone.helpers.HearthstoneHelper;
 import io.github.thesowut.hearthstone.helpers.PluginHelper;
 import org.bukkit.Location;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,12 +11,12 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class InteractionListener implements Listener {
-    private final FileConfiguration _config;
+    private final FileHelper _fileHelper;
     private final HearthstoneHelper _hearthstoneHelper;
     private final PluginHelper _pluginHelper;
 
-    public InteractionListener(FileConfiguration config, HearthstoneHelper hearthstoneHelper, PluginHelper pluginHelper) {
-        this._config = config;
+    public InteractionListener(FileHelper fileHelper, HearthstoneHelper hearthstoneHelper, PluginHelper pluginHelper) {
+        this._fileHelper = fileHelper;
         this._hearthstoneHelper = hearthstoneHelper;
         this._pluginHelper = pluginHelper;
     }
@@ -24,7 +24,7 @@ public class InteractionListener implements Listener {
     @EventHandler
     public void onPlayer(@NotNull PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        Location homeLocation = _config.getLocation(player.getName().toLowerCase());
+        Location homeLocation = _fileHelper.getHomes().getLocation(player.getName().toLowerCase());
         if (!this.isEventValid(event)) return;
         if (!this.isAbleToHearthstone(player, homeLocation)) return;
 
@@ -53,7 +53,6 @@ public class InteractionListener implements Listener {
     }
 
     /**
-     *
      * @param player - Player using hearthstone.
      * @return Whether the player can use the hearthstone.
      */

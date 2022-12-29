@@ -1,12 +1,11 @@
 package io.github.thesowut.hearthstone.commands;
 
-import io.github.thesowut.hearthstone.handler.Hearthstone;
+import io.github.thesowut.hearthstone.helpers.FileHelper;
 import io.github.thesowut.hearthstone.helpers.HearthstoneHelper;
 import io.github.thesowut.hearthstone.helpers.PluginHelper;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,24 +14,22 @@ import java.util.ArrayList;
 public class HearthstoneCommands implements CommandExecutor {
     public enum HSCommand {
         get,
-        sethome
+        sethome,
+        reload
     }
 
-    private final FileConfiguration _config;
     private final HearthstoneHelper _hearthstoneHelper;
     private final PluginHelper _pluginHelper;
-    private final Hearthstone _main;
+    private final FileHelper _fileHelper;
 
     public HearthstoneCommands(
-            FileConfiguration config,
             HearthstoneHelper hearthstoneHelper,
             PluginHelper pluginhelper,
-            Hearthstone main
+            FileHelper fileHelper
     ) {
-        this._config = config;
         this._hearthstoneHelper = hearthstoneHelper;
         this._pluginHelper = pluginhelper;
-        this._main = main;
+        this._fileHelper = fileHelper;
     }
 
     @Override
@@ -61,9 +58,13 @@ public class HearthstoneCommands implements CommandExecutor {
                     break;
                 }
 
-                _config.set(player.getName().toLowerCase(), player.getLocation());
+                _fileHelper.getHomes().set(player.getName().toLowerCase(), player.getLocation());
                 _pluginHelper.sendHomeSetMessage(player);
-                _main.saveConfig();
+                _fileHelper.saveHomes();
+                break;
+            case reload:
+                _fileHelper.reload();
+                _pluginHelper.sendReloadMessage(player);
                 break;
         }
         return true;

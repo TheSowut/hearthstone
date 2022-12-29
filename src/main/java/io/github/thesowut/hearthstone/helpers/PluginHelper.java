@@ -1,5 +1,6 @@
 package io.github.thesowut.hearthstone.helpers;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -73,6 +74,17 @@ public class PluginHelper {
      */
     public void sendActiveCooldownMesage(Player player) {
         player.sendMessage(this.title + ChatColor.RED + "The Hearthstone is still warm!");
+    }
+
+    /**
+     * Send a chat message to the player & console after a player issues a plugin reload.
+     *
+     * @param player - Player using hearthstone
+     */
+    public void sendReloadMessage(Player player) {
+        player.sendMessage(this.title + ChatColor.GREEN + "Plugin has been reloaded.");
+        Bukkit.getServer().getConsoleSender().sendMessage(this.title + ChatColor.YELLOW +
+                player.getName() + " issued a reload.");
     }
 
     /**
