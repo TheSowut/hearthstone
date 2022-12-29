@@ -3,7 +3,7 @@ package io.github.thesowut.hearthstone.handler;
 import io.github.thesowut.hearthstone.commands.HearthstoneCommands;
 import io.github.thesowut.hearthstone.helpers.HearthstoneHelper;
 import io.github.thesowut.hearthstone.helpers.PluginHelper;
-import io.github.thesowut.hearthstone.listeners.HearthstoneListener;
+import io.github.thesowut.hearthstone.listeners.InteractionListener;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
@@ -12,8 +12,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class Hearthstone extends JavaPlugin {
     private final FileConfiguration _config = this.getConfig();
     private final PluginHelper _pluginHelper = new PluginHelper();
-    private final HearthstoneHelper _hearthstoneHelper = new HearthstoneHelper(_config, _pluginHelper);
-    private final HearthstoneListener _hearthstoneListener = new HearthstoneListener(_hearthstoneHelper);
+    private final HearthstoneHelper _hearthstoneHelper = new HearthstoneHelper(_config, _pluginHelper, this);
+    private final InteractionListener _interactionListener = new InteractionListener(_hearthstoneHelper);
     private final HearthstoneCommands _hearthstoneCommands =
             new HearthstoneCommands(_config, _hearthstoneHelper, _pluginHelper, this);
 
@@ -21,7 +21,7 @@ public final class Hearthstone extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         getServer().getConsoleSender().sendMessage(_pluginHelper.title + ChatColor.GREEN + "Plugin enabled.");
-        getServer().getPluginManager().registerEvents(_hearthstoneListener, this);
+        getServer().getPluginManager().registerEvents(_interactionListener, this);
 
         // TODO
         // find a better way to do this
@@ -43,6 +43,6 @@ public final class Hearthstone extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         getServer().getConsoleSender().sendMessage(_pluginHelper.title + ChatColor.RED + "Plugin disabled.");
-        HandlerList.unregisterAll(_hearthstoneListener);
+        HandlerList.unregisterAll(_interactionListener);
     }
 }

@@ -7,10 +7,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 
-public class HearthstoneListener implements Listener {
+public class InteractionListener implements Listener {
     private final HearthstoneHelper _hearthstoneHelper;
 
-    public HearthstoneListener(HearthstoneHelper hearthstoneHelper) {
+    public InteractionListener(HearthstoneHelper hearthstoneHelper) {
         this._hearthstoneHelper = hearthstoneHelper;
     }
 
