@@ -37,7 +37,7 @@ public class PluginHelper {
     public void sendTeleportationMessage(Player player, HearthstoneHelper.TeleportationState state) {
         switch (state) {
             case STARTED:
-                player.sendMessage(this.title + ChatColor.GREEN + "Teleportation started, remain still.");
+                player.sendMessage(this.title + ChatColor.GREEN + "Teleportation started, use again to cancel.");
                 break;
             case SUCCESS:
                 player.sendMessage(this.title + ChatColor.GOLD + (ChatColor.ITALIC + "Whoosh."));
