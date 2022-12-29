@@ -33,7 +33,17 @@ public class PluginHelper {
      *
      * @param player - Player using hearthstone
      */
-    public void sendTeleportationMessage(Player player) {
-        player.sendMessage(ChatColor.GOLD + (ChatColor.ITALIC + "Whoosh."));
+    public void sendTeleportationMessage(Player player, HearthstoneHelper.TeleportationState state) {
+        switch (state) {
+            case STARTED:
+                player.sendMessage(this.title + ChatColor.GREEN + "Teleportation started, remain still.");
+                break;
+            case SUCCESS:
+                player.sendMessage(this.title + ChatColor.GOLD + (ChatColor.ITALIC + "Whoosh."));
+                break;
+            case FAIL:
+                player.sendMessage(this.title + ChatColor.RED + "Teleportation failed due to movement!");
+                break;
+        }
     }
 }

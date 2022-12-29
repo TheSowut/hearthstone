@@ -9,6 +9,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class HearthstoneCommands implements CommandExecutor {
     private final FileConfiguration _config;
@@ -29,9 +30,9 @@ public class HearthstoneCommands implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(_pluginHelper.title + ChatColor.RED + "Must be player to do that!");
+            sender.sendMessage(_pluginHelper.title + ChatColor.RED + "Must be a player to do that!");
             return true;
         }
 
@@ -48,7 +49,6 @@ public class HearthstoneCommands implements CommandExecutor {
                 player.getInventory().addItem(_hearthstoneHelper.hearthstoneItem);
                 player.sendMessage(_pluginHelper.title + ChatColor.GREEN + "A Hearthstone appears in your pocket!");
                 break;
-
             case "sethome":
                 if (!this._hearthstoneHelper.canUseHearthstone(player)) {
                     player.sendMessage(_pluginHelper.title + ChatColor.RED + "Must be grounded to perform that!");
@@ -60,7 +60,6 @@ public class HearthstoneCommands implements CommandExecutor {
                 _main.saveConfig();
                 break;
         }
-
         return true;
     }
 }
