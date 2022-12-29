@@ -58,7 +58,7 @@ public class HearthstoneCommands implements CommandExecutor {
                     break;
                 }
 
-                _fileHelper.getHomes().set(player.getName().toLowerCase(), player.getLocation());
+                _fileHelper.getHomes().set(String.valueOf(player.getUniqueId()), player.getLocation());
                 _pluginHelper.sendHomeSetMessage(player);
                 _fileHelper.saveHomes();
                 break;

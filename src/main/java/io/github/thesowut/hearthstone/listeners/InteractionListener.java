@@ -24,7 +24,7 @@ public class InteractionListener implements Listener {
     @EventHandler
     public void onPlayer(@NotNull PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        Location homeLocation = _fileHelper.getHomes().getLocation(player.getName().toLowerCase());
+        Location homeLocation = _fileHelper.getHomes().getLocation(String.valueOf(player.getUniqueId()));
         if (!this.isEventValid(event)) return;
         if (!this.isAbleToHearthstone(player, homeLocation)) return;
 
