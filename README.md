@@ -13,11 +13,13 @@ Hearthstone features customizable cast times and cooldowns to fit your server ne
 
 ## Usage:
 
+### Item:
+*Right Click* with a Hearthstone to trigger a teleportation.
+
 #### Commands:
 /hearthstone:get - gives the player a hearthstone, 1 per player<br>
 /hearthstone:sethome - sets a location as the players home<br>
-/hearthstone:reload - reload plugin configuration
-*Right Click* with a Hearthstone will trigger a teleportation.
+/hearthstone:reload - reloads the plugin configuration<br>
 
 #### Permissions:
 - hearthstone.get - permission to get a hearthstone
