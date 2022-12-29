@@ -74,7 +74,8 @@ public class InteractionListener implements Listener {
         }
         // If the player has used the hearthstone already, send an error message.
         if (_hearthstoneHelper.hasCooldown(player)) {
-            _pluginHelper.sendActiveCooldownMesage(player);
+            long cooldown = _hearthstoneHelper.getHearthstoneCooldown(player);
+            _pluginHelper.sendActiveCooldownMessage(player, cooldown);
             return false;
         }
         return true;

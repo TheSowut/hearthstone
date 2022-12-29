@@ -71,7 +71,7 @@ public class HearthstoneHelper {
             // TODO get teleportation delay from config
             int teleportDelay = 5;
             // TODO get teleportation cooldown from cooldowns.yml
-            final int TEN_MINUTES_IN_MILLISECONDS = 600000;
+            final int FIVE_MINUTES_IN_MILLISECONDS = 300000;
 
             int taskNumber = Bukkit.getScheduler().scheduleSyncDelayedTask(_main, () -> {
                 playersBeingTeleported.remove(player.getUniqueId());
@@ -80,7 +80,7 @@ public class HearthstoneHelper {
                 player.teleport(playerHomeLocation);
                 _pluginHelper.sendTeleportationMessage(player, TeleportationState.SUCCESS);
                 _fileHelper.getCooldowns().set(String.valueOf(player.getUniqueId()),
-                        System.currentTimeMillis() + TEN_MINUTES_IN_MILLISECONDS);
+                        System.currentTimeMillis() + FIVE_MINUTES_IN_MILLISECONDS);
                 _fileHelper.saveCooldowns();
 
                 // If there are no players using the hearthstone, remove the listener.

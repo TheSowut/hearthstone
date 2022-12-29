@@ -72,8 +72,19 @@ public class PluginHelper {
      *
      * @param player - Player using hearthstone
      */
-    public void sendActiveCooldownMesage(Player player) {
-        player.sendMessage(this.title + ChatColor.RED + "The Hearthstone is still warm!");
+    public void sendActiveCooldownMessage(Player player, long cooldown) {
+        long now = System.currentTimeMillis();
+        long timeLeft = cooldown - now;
+        String seconds = String.valueOf((timeLeft / 1000) % 60);
+        long minutes = (timeLeft / 1000) / 60;
+
+        if (minutes > 0) {
+            player.sendMessage(this.title + ChatColor.RED +
+                    "The Hearthstone cannot be used for another " + minutes + " minutes and " + seconds + " seconds!");
+            return;
+        }
+        player.sendMessage(this.title + ChatColor.RED +
+                "The Hearthstone cannot be used for another " + seconds + " seconds!");
     }
 
     /**
