@@ -28,19 +28,21 @@ public class HearthstoneHelper {
     public final ItemStack hearthstoneItem = this.getHearthstone();
     public final Map<UUID, TeleportationState> playersBeingTeleported = new HashMap<>();
     public final Map<UUID, Integer> teleportationTasks = new HashMap<>();
+    private final FileHelper _fileHelper;
     private final PluginHelper _pluginHelper;
     private final MovementListener _movementListener = new MovementListener(this);
     private final Hearthstone _main;
 
-    public HearthstoneHelper(PluginHelper pluginHelper, Hearthstone main) {
+    public HearthstoneHelper(PluginHelper pluginHelper, FileHelper fileHelper, Hearthstone main) {
         this._pluginHelper = pluginHelper;
+        this._fileHelper = fileHelper;
         this._main = main;
     }
 
     /**
      * Initialize the Hearthstone item.
      *
-     * @return Hearthstone Item
+     * @return Hearthstone Item.
      */
     public ItemStack getHearthstone() {
         ItemStack _item = new ItemStack(Material.ECHO_SHARD);
@@ -52,9 +54,9 @@ public class HearthstoneHelper {
     }
 
     /**
-     * If the player has set a hearthstone home, invoke teleportation
+     * If the player has set a hearthstone home, invoke teleportation.
      *
-     * @param event - Player Interaction
+     * @param event - Player Interaction.
      */
     public void teleportPlayer(PlayerInteractEvent event, Location playerHomeLocation) {
         Player player = event.getPlayer();
@@ -66,20 +68,26 @@ public class HearthstoneHelper {
                 _main.getServer().getPluginManager().registerEvents(_movementListener, _main);
             }
             playersBeingTeleported.put(player.getUniqueId(), TeleportationState.STARTED);
-            // TODO get teleportation delay from config after moving players userdata
-            int delay = 5;
+            // TODO get teleportation delay from config
+            int teleportDelay = 5;
+            // TODO get teleportation cooldown from cooldowns.yml
+            final int TEN_MINUTES_IN_MILLISECONDS = 600000;
+
             int taskNumber = Bukkit.getScheduler().scheduleSyncDelayedTask(_main, () -> {
                 playersBeingTeleported.remove(player.getUniqueId());
                 teleportationTasks.remove(player.getUniqueId());
 
                 player.teleport(playerHomeLocation);
                 _pluginHelper.sendTeleportationMessage(player, TeleportationState.SUCCESS);
+                _fileHelper.getCooldowns().set(String.valueOf(player.getUniqueId()),
+                        System.currentTimeMillis() + TEN_MINUTES_IN_MILLISECONDS);
+                _fileHelper.saveCooldowns();
 
                 // If there are no players using the hearthstone, remove the listener.
                 if (playersBeingTeleported.size() < 1) {
                     HandlerList.unregisterAll(_movementListener);
                 }
-            }, 20 * delay);
+            }, 20 * teleportDelay);
 
             _pluginHelper.sendTeleportationMessage(player, TeleportationState.STARTED);
             teleportationTasks.put(player.getUniqueId(), taskNumber);
@@ -89,8 +97,8 @@ public class HearthstoneHelper {
     /**
      * Indicate whether the player can invoke hearthstone commands.
      *
-     * @param player - Player using Hearthstone
-     * @return - Whether the player is grounded
+     * @param player - Player using Hearthstone.
+     * @return - Whether the player is grounded.
      */
     public boolean isPlayerNotGrounded(Player player) {
         return player.isSwimming()
@@ -127,12 +135,21 @@ public class HearthstoneHelper {
     }
 
     /**
-     * TODO
-     *
-     * @param player - Player using Hearthstone
-     * @return -  Whether the player's hearthstone has cooldown.
+     * @param player - Player using Hearthstone.
+     * @return - Whether the hearthstone has cooldown.
      */
     public boolean hasCooldown(Player player) {
-        return Math.random() * 10 > 5;
+        return this.getHearthstoneCooldown(player) > System.currentTimeMillis();
+    }
+
+    /**
+     * @param player - Player using Hearthstone.
+     * @return - Cooldown of hearthstone in milliseconds.
+     */
+    public long getHearthstoneCooldown(Player player) {
+        long cooldown = 0;
+        if (_fileHelper.getCooldowns().get(String.valueOf(player.getUniqueId())) != null)
+            cooldown = (long) _fileHelper.getCooldowns().get(String.valueOf(player.getUniqueId()));
+        return cooldown;
     }
 }
