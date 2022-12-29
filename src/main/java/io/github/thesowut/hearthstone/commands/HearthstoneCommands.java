@@ -11,7 +11,14 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+
 public class HearthstoneCommands implements CommandExecutor {
+    public enum HSCommand {
+        get,
+        sethome
+    }
+
     private final FileConfiguration _config;
     private final HearthstoneHelper _hearthstoneHelper;
     private final PluginHelper _pluginHelper;
@@ -37,10 +44,10 @@ public class HearthstoneCommands implements CommandExecutor {
         }
 
         Player player = ((Player) sender).getPlayer();
-        String command = cmd.getName().toLowerCase();
+        HSCommand command = HSCommand.valueOf(cmd.getName().toLowerCase());
 
         switch (command) {
-            case "get":
+            case get:
                 if (player.getInventory().contains(_hearthstoneHelper.hearthstoneItem)) {
                     player.sendMessage(_pluginHelper.title + ChatColor.RED + "You can only carry a single Hearthstone!");
                     break;
@@ -49,7 +56,7 @@ public class HearthstoneCommands implements CommandExecutor {
                 player.getInventory().addItem(_hearthstoneHelper.hearthstoneItem);
                 player.sendMessage(_pluginHelper.title + ChatColor.GREEN + "A Hearthstone appears in your pocket!");
                 break;
-            case "sethome":
+            case sethome:
                 if (!this._hearthstoneHelper.canUseHearthstone(player)) {
                     player.sendMessage(_pluginHelper.title + ChatColor.RED + "Must be grounded to perform that!");
                     break;
@@ -61,5 +68,18 @@ public class HearthstoneCommands implements CommandExecutor {
                 break;
         }
         return true;
+    }
+
+    /**
+     * Fetch a list of all the commands the plugin provides.
+     *
+     * @return commands - all plugin commands
+     */
+    public ArrayList<String> getCommands() {
+        ArrayList<String> commands = new ArrayList<>();
+        for (HearthstoneCommands.HSCommand cmd : HearthstoneCommands.HSCommand.values()) {
+            commands.add(String.valueOf(cmd));
+        }
+        return commands;
     }
 }

@@ -9,6 +9,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
+
 public final class Hearthstone extends JavaPlugin {
     private final FileConfiguration _config = this.getConfig();
     private final PluginHelper _pluginHelper = new PluginHelper();
@@ -19,14 +21,14 @@ public final class Hearthstone extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
         getServer().getConsoleSender().sendMessage(_pluginHelper.title + ChatColor.GREEN + "Plugin enabled.");
         getServer().getPluginManager().registerEvents(_interactionListener, this);
 
-        // TODO
-        // find a better way to do this
-        getCommand("get").setExecutor(_hearthstoneCommands);
-        getCommand("sethome").setExecutor(_hearthstoneCommands);
+        // Register all commands
+        ArrayList<String> pluginCommands = _hearthstoneCommands.getCommands();
+        for (String command : pluginCommands) {
+            getCommand(command).setExecutor(_hearthstoneCommands);
+        }
 
         // TODO
         // instead of using config for player homes, create separate file inside userdata dir
