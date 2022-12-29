@@ -11,8 +11,12 @@ commands:
     permission: hearthstone.get
     permission-message: You do not have permission.
   sethome:
-    description: Set home for hearthstone
+    description: Set hearthstone home
     usage: /<command>
-
     permission: hearthstone.sethome
+    permission-message: You do not have permission.
+  reload:
+    description: Reload the plugin
+    usage: /<command>
+    permission: hearthstone.reload
     permission-message: You do not have permission.
