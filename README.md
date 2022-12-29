@@ -3,10 +3,10 @@ Hearthstone README
 
 <img src="images/hearthstone-artwork.png" alt="hearthstone artwork" style="width: 30%">
 
-<p>Hearthstone is a Spigot plugin that recreates the well-known functionality from World of Warcraft.<br>
-The players sets a desired location as a home and with the use of
-Hearthstone, he can warp back.<br>
-Hearthstone features customizable cast times and cooldowns to fit your server needs.</p> 
+> <p>Hearthstone is a Spigot plugin that recreates the well-known functionality from World of Warcraft.<br>
+> The players sets a desired location as a home and with the use of
+> Hearthstone, he can warp back.<br>
+> Hearthstone features customizable cast times and cooldowns to fit your server needs.</p> 
 
 ### Example:
 <i>placeholder</i>
@@ -14,12 +14,12 @@ Hearthstone features customizable cast times and cooldowns to fit your server ne
 ## Usage:
 
 ### Item:
-*Right Click* with a Hearthstone to trigger a teleportation.
+> *Right Click* with a Hearthstone to trigger a teleportation.
 
 #### Commands:
-/hearthstone:get - gives the player a hearthstone, 1 per player<br>
-/hearthstone:sethome - sets a location as the players home<br>
-/hearthstone:reload - reloads the plugin configuration<br>
+- /hearthstone:get - gives the player a hearthstone, 1 per player<br>
+- /hearthstone:sethome - sets a location as the players home<br>
+- /hearthstone:reload - reloads the plugin configuration<br>
 
 #### Permissions:
 - hearthstone.get - permission to get a hearthstone
