@@ -17,6 +17,7 @@ public class PluginHelper {
      */
     public void sendNullHomeMessage(Player player) {
         player.sendMessage(this.title + ChatColor.RED + "The Hearthstone doesn't lead anywhere!");
+        player.sendMessage(this.title + "Use " + ChatColor.YELLOW + "/hearthstone:sethome" + ChatColor.RESET + " first.");
     }
 
     /**
@@ -41,8 +42,8 @@ public class PluginHelper {
             case SUCCESS:
                 player.sendMessage(this.title + ChatColor.GOLD + (ChatColor.ITALIC + "Whoosh."));
                 break;
-            case FAIL:
-                player.sendMessage(this.title + ChatColor.RED + "Teleportation failed due to movement!");
+            case CANCELED:
+                player.sendMessage(this.title + ChatColor.RED + "Teleportation canceled!");
                 break;
         }
     }

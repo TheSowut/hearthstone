@@ -22,6 +22,11 @@ public class InteractionListener implements Listener {
         if (event.getHand() != EquipmentSlot.HAND) return;
         // If the player isn't right-clicking with a Hearthstone, do nothing.
         if (!event.getItem().equals(_hearthstoneHelper.hearthstoneItem)) return;
+        // If the player is already teleporting, stop the channeling.
+        if (_hearthstoneHelper.isUsingHearthstone(event.getPlayer())) {
+            _hearthstoneHelper.cancelTeleportation(event.getPlayer());
+            return;
+        }
 
         // TODO
         // Add cooldown to hearthstone usage

@@ -14,17 +14,21 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class HearthstoneHelper {
     public enum TeleportationState {
         STARTED,
         SUCCESS,
-        FAIL
+        CANCELED
     }
 
     public final ItemStack hearthstoneItem = this.getHearthstone();
     public final Map<UUID, TeleportationState> playersBeingTeleported = new HashMap<>();
+    public final Map<UUID, Integer> teleportationTasks = new HashMap<>();
     private final MovementListener _movementListener = new MovementListener(this);
     private final FileConfiguration _config;
     private final PluginHelper _pluginHelper;
@@ -76,21 +80,19 @@ public class HearthstoneHelper {
             _main.getServer().getPluginManager().registerEvents(_movementListener, _main);
 
             playersBeingTeleported.put(player.getUniqueId(), TeleportationState.STARTED);
-            _pluginHelper.sendTeleportationMessage(player, TeleportationState.STARTED);
             // TODO get teleportation delay from config after moving players userdata
             int delay = 5;
-            Bukkit.getScheduler().scheduleSyncDelayedTask(_main, () -> {
-                TeleportationState teleportState = playersBeingTeleported.get(player.getUniqueId());
+            int taskNumber = Bukkit.getScheduler().scheduleSyncDelayedTask(_main, () -> {
                 HandlerList.unregisterAll(_movementListener);
-                if (teleportState == TeleportationState.FAIL) {
-                    _pluginHelper.sendTeleportationMessage(player, teleportState);
-                    return;
-                }
+                playersBeingTeleported.remove(player.getUniqueId());
+                teleportationTasks.remove(player.getUniqueId());
 
-                teleportState = TeleportationState.SUCCESS;
                 player.teleport(playerHomeLocation);
-                _pluginHelper.sendTeleportationMessage(player, teleportState);
+                _pluginHelper.sendTeleportationMessage(player, TeleportationState.SUCCESS);
             }, 20 * delay);
+
+            _pluginHelper.sendTeleportationMessage(player, TeleportationState.STARTED);
+            teleportationTasks.put(player.getUniqueId(), taskNumber);
         }
     }
 
@@ -103,5 +105,32 @@ public class HearthstoneHelper {
     public boolean canUseHearthstone(Player player) {
         return !player.isSwimming()
                 && !(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR);
+    }
+
+    /**
+     * Check whether a player is currently teleporting.
+     *
+     * @param player - The player checked for teleportation status.
+     * @return - Whether the player is teleporting.
+     */
+    public boolean isUsingHearthstone(Player player) {
+        return this.playersBeingTeleported.get(player.getUniqueId()) != null;
+    }
+
+    /**
+     * Stop hearthstone process of a player.
+     *
+     * @param player - Player whose teleportation will be canceled.
+     */
+    public void cancelTeleportation(Player player) {
+        if (!isUsingHearthstone(player)) return;
+
+        final int taskId = this.teleportationTasks.get(player.getUniqueId());
+        _main.getServer().getScheduler().cancelTask(taskId);
+        _pluginHelper.sendTeleportationMessage(player, TeleportationState.CANCELED);
+
+        playersBeingTeleported.remove(player.getUniqueId());
+        teleportationTasks.remove(player.getUniqueId());
+        HandlerList.unregisterAll(_movementListener);
     }
 }

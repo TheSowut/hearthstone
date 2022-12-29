@@ -19,8 +19,9 @@ public class MovementListener implements Listener {
 
         if (_hearthstoneHelper.playersBeingTeleported.containsKey(player.getUniqueId())) {
             // If the player moves, mark it as failed.
-            if (event.getTo() != null && event.getTo().getX() != event.getFrom().getX() || event.getTo().getY() != event.getFrom().getY()) {
-                _hearthstoneHelper.playersBeingTeleported.put(player.getUniqueId(), HearthstoneHelper.TeleportationState.FAIL);
+            if (event.getTo() != null && (event.getTo().getX() != event.getFrom().getX()
+                    || event.getTo().getY() != event.getFrom().getY())) {
+                _hearthstoneHelper.cancelTeleportation(player);
             }
         }
     }
