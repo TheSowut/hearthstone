@@ -3,7 +3,6 @@ package io.github.thesowut.hearthstone.commands;
 import io.github.thesowut.hearthstone.handler.Hearthstone;
 import io.github.thesowut.hearthstone.helpers.HearthstoneHelper;
 import io.github.thesowut.hearthstone.helpers.PluginHelper;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -39,7 +38,7 @@ public class HearthstoneCommands implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(_pluginHelper.title + ChatColor.RED + "Must be a player to do that!");
+            _pluginHelper.sendSenderNotPlayerMessage(sender);
             return true;
         }
 
@@ -49,21 +48,21 @@ public class HearthstoneCommands implements CommandExecutor {
         switch (command) {
             case get:
                 if (player.getInventory().contains(_hearthstoneHelper.hearthstoneItem)) {
-                    player.sendMessage(_pluginHelper.title + ChatColor.RED + "You can only carry a single Hearthstone!");
+                    _pluginHelper.sendHearthstoneCapReachedMessage(player);
                     break;
                 }
 
                 player.getInventory().addItem(_hearthstoneHelper.hearthstoneItem);
-                player.sendMessage(_pluginHelper.title + ChatColor.GREEN + "A Hearthstone appears in your pocket!");
+                _pluginHelper.sendHearthstoneReceivedMessage(player);
                 break;
             case sethome:
                 if (!this._hearthstoneHelper.canUseHearthstone(player)) {
-                    player.sendMessage(_pluginHelper.title + ChatColor.RED + "Must be grounded to perform that!");
+                    _pluginHelper.sendNotGroundedMessage(player);
                     break;
                 }
 
                 _config.set(player.getName().toLowerCase(), player.getLocation());
-                player.sendMessage(_pluginHelper.title + ChatColor.GREEN + "You new home has been set.");
+                _pluginHelper.sendHomeSetMessage(player);
                 _main.saveConfig();
                 break;
         }
