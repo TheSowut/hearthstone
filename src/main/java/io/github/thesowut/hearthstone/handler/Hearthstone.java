@@ -14,8 +14,8 @@ import java.util.ArrayList;
 public final class Hearthstone extends JavaPlugin {
     private final FileConfiguration _config = this.getConfig();
     private final PluginHelper _pluginHelper = new PluginHelper();
-    private final HearthstoneHelper _hearthstoneHelper = new HearthstoneHelper(_config, _pluginHelper, this);
-    private final InteractionListener _interactionListener = new InteractionListener(_hearthstoneHelper);
+    private final HearthstoneHelper _hearthstoneHelper = new HearthstoneHelper(_pluginHelper, this);
+    private final InteractionListener _interactionListener = new InteractionListener(_config, _hearthstoneHelper, _pluginHelper);
     private final HearthstoneCommands _hearthstoneCommands =
             new HearthstoneCommands(_config, _hearthstoneHelper, _pluginHelper, this);
 

@@ -56,7 +56,7 @@ public class HearthstoneCommands implements CommandExecutor {
                 _pluginHelper.sendHearthstoneReceivedMessage(player);
                 break;
             case sethome:
-                if (!this._hearthstoneHelper.canUseHearthstone(player)) {
+                if (this._hearthstoneHelper.isPlayerNotGrounded(player)) {
                     _pluginHelper.sendNotGroundedMessage(player);
                     break;
                 }

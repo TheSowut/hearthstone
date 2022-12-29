@@ -7,7 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -29,13 +28,11 @@ public class HearthstoneHelper {
     public final ItemStack hearthstoneItem = this.getHearthstone();
     public final Map<UUID, TeleportationState> playersBeingTeleported = new HashMap<>();
     public final Map<UUID, Integer> teleportationTasks = new HashMap<>();
-    private final MovementListener _movementListener = new MovementListener(this);
-    private final FileConfiguration _config;
     private final PluginHelper _pluginHelper;
+    private final MovementListener _movementListener = new MovementListener(this);
     private final Hearthstone _main;
 
-    public HearthstoneHelper(FileConfiguration config, PluginHelper pluginHelper, Hearthstone main) {
-        this._config = config;
+    public HearthstoneHelper(PluginHelper pluginHelper, Hearthstone main) {
         this._pluginHelper = pluginHelper;
         this._main = main;
     }
@@ -59,23 +56,10 @@ public class HearthstoneHelper {
      *
      * @param event - Player Interaction
      */
-    public void teleportPlayer(PlayerInteractEvent event) {
+    public void teleportPlayer(PlayerInteractEvent event, Location playerHomeLocation) {
         Player player = event.getPlayer();
-        Location playerHomeLocation = this._config.getLocation(player.getName().toLowerCase());
-        boolean isRightClickPressed = event.getAction().toString().contains("RIGHT_CLICK");
-        boolean isAbleToHearthstone = this.canUseHearthstone(player);
 
-        if (!this.canUseHearthstone(player)) {
-            _pluginHelper.sendNotGroundedMessage(player);
-            return;
-        }
-
-        if (playerHomeLocation == null && isRightClickPressed) {
-            _pluginHelper.sendNullHomeMessage(player);
-            return;
-        }
-
-        if (event.getItem() != null && event.getItem().equals(this.hearthstoneItem) && isAbleToHearthstone && isRightClickPressed) {
+        if (event.getItem() != null) {
             // Attach a new listener for player movement.
             // Avoid attaching if there is a listener present, use it instead.
             if (playersBeingTeleported.size() < 1) {
@@ -108,9 +92,9 @@ public class HearthstoneHelper {
      * @param player - Player using Hearthstone
      * @return - Whether the player is grounded
      */
-    public boolean canUseHearthstone(Player player) {
-        return !player.isSwimming()
-                && !(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR);
+    public boolean isPlayerNotGrounded(Player player) {
+        return player.isSwimming()
+                || player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR;
     }
 
     /**
@@ -140,5 +124,15 @@ public class HearthstoneHelper {
         if (playersBeingTeleported.size() < 1) {
             HandlerList.unregisterAll(_movementListener);
         }
+    }
+
+    /**
+     * TODO
+     *
+     * @param player - Player using Hearthstone
+     * @return -  Whether the player's hearthstone has cooldown.
+     */
+    public boolean hasCooldown(Player player) {
+        return Math.random() * 10 > 5;
     }
 }

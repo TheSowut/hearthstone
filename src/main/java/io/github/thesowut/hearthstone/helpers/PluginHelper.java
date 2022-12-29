@@ -33,7 +33,7 @@ public class PluginHelper {
     /**
      * Send a chat message to the command sender if he isn't a player (e.g. command block/console).
      *
-     * @param sender - Sender invoking the commend
+     * @param sender - Sender invoking the command
      */
     public void sendSenderNotPlayerMessage(CommandSender sender) {
         sender.sendMessage(this.title + ChatColor.RED + "Must be a player to do that!");
@@ -64,6 +64,15 @@ public class PluginHelper {
      */
     public void sendHearthstoneReceivedMessage(Player player) {
         player.sendMessage(this.title + ChatColor.GREEN + "A Hearthstone appears in your pocket!");
+    }
+
+    /**
+     * Send a chat message to the player if he's trying to use the hearthstone while it isn't ready.
+     *
+     * @param player - Player using hearthstone
+     */
+    public void sendActiveCooldownMesage(Player player) {
+        player.sendMessage(this.title + ChatColor.RED + "The Hearthstone is still warm!");
     }
 
     /**
