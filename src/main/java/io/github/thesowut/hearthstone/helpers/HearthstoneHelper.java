@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class HearthstoneHelper {
     public enum TeleportationState {
@@ -60,6 +61,8 @@ public class HearthstoneHelper {
      */
     public void teleportPlayer(PlayerInteractEvent event, Location playerHomeLocation) {
         Player player = event.getPlayer();
+        long castTime = this.getCastTime();
+        long cooldown = this.getCooldown();
 
         if (event.getItem() != null) {
             // Attach a new listener for player movement.
@@ -68,10 +71,6 @@ public class HearthstoneHelper {
                 _main.getServer().getPluginManager().registerEvents(_movementListener, _main);
             }
             playersBeingTeleported.put(player.getUniqueId(), TeleportationState.STARTED);
-            // TODO get teleportation delay from config
-            int teleportDelay = 5;
-            // TODO get teleportation cooldown from cooldowns.yml
-            final int FIVE_MINUTES_IN_MILLISECONDS = 300000;
 
             int taskNumber = Bukkit.getScheduler().scheduleSyncDelayedTask(_main, () -> {
                 playersBeingTeleported.remove(player.getUniqueId());
@@ -79,15 +78,17 @@ public class HearthstoneHelper {
 
                 player.teleport(playerHomeLocation);
                 _pluginHelper.sendTeleportationMessage(player, TeleportationState.SUCCESS);
+
+                // Save the cooldown delay for the user.
                 _fileHelper.getCooldowns().set(String.valueOf(player.getUniqueId()),
-                        System.currentTimeMillis() + FIVE_MINUTES_IN_MILLISECONDS);
+                        System.currentTimeMillis() + cooldown);
                 _fileHelper.saveCooldowns();
 
                 // If there are no players using the hearthstone, remove the listener.
                 if (playersBeingTeleported.size() < 1) {
                     HandlerList.unregisterAll(_movementListener);
                 }
-            }, 20 * teleportDelay);
+            }, 20 * castTime);
 
             _pluginHelper.sendTeleportationMessage(player, TeleportationState.STARTED);
             teleportationTasks.put(player.getUniqueId(), taskNumber);
@@ -151,5 +152,24 @@ public class HearthstoneHelper {
         if (_fileHelper.getCooldowns().get(String.valueOf(player.getUniqueId())) != null)
             cooldown = (long) _fileHelper.getCooldowns().get(String.valueOf(player.getUniqueId()));
         return cooldown;
+    }
+
+    /**
+     * Get "cast_time" value from config.yml.
+     *
+     * @return - cast_time in seconds
+     */
+    public int getCastTime() {
+        return (int) _main.getConfig().get("cast_time");
+    }
+
+    /**
+     * Get "cooldown" value from config.yml in milliseconds.
+     *
+     * @return - cooldown in milliseconds
+     */
+    public long getCooldown() {
+        int cooldown = (int) _main.getConfig().get("cooldown");
+        return TimeUnit.SECONDS.toMillis(cooldown);
     }
 }

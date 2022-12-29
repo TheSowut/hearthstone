@@ -9,6 +9,11 @@ import java.io.File;
 import java.io.IOException;
 
 public class FileHelper {
+    public enum Configuration {
+        cooldown,
+        cast_time
+    }
+
     private final Hearthstone _main;
     private final PluginHelper _pluginHelper;
     private File _homes;
@@ -81,6 +86,7 @@ public class FileHelper {
      * Reload the plugin data files.
      */
     public void reload() {
+        _main.reloadConfig();
         _homesConfig = YamlConfiguration.loadConfiguration(_homes);
         _cooldownsConfig = YamlConfiguration.loadConfiguration(_cooldowns);
     }

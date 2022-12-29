@@ -26,22 +26,13 @@ public final class Hearthstone extends JavaPlugin {
         getServer().getConsoleSender().sendMessage(_pluginHelper.title + ChatColor.GREEN + "Plugin enabled.");
         getServer().getPluginManager().registerEvents(_interactionListener, this);
         this.loadDataFiles();
+        this.setDefaultConfig();
 
         // Register all commands
         ArrayList<String> pluginCommands = _hearthstoneCommands.getCommands();
         for (String command : pluginCommands) {
             getCommand(command).setExecutor(_hearthstoneCommands);
         }
-
-        // TODO
-        // instead of using config for player homes, create separate file inside userdata dir
-        // use config to for the following:
-        // number of hearthstone usages
-        // hearthstone material
-        // cooldown between usages length
-
-        _config.options().copyDefaults(true);
-        saveConfig();
     }
 
     @Override
@@ -60,5 +51,14 @@ public final class Hearthstone extends JavaPlugin {
         _fileHelper.getCooldowns().options().copyDefaults(true);
         _fileHelper.saveHomes();
         _fileHelper.saveCooldowns();
+    }
+
+    private void setDefaultConfig() {
+        // TODO add comment explanation
+        _config.addDefault(String.valueOf(FileHelper.Configuration.cooldown), 120);
+        // TODO add comment explanation
+        _config.addDefault(String.valueOf(FileHelper.Configuration.cast_time), 5);
+        _config.options().copyDefaults(true);
+        saveConfig();
     }
 }
