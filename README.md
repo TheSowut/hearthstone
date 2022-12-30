@@ -9,7 +9,13 @@ Hearthstone README
 > Hearthstone features customizable cast times and cooldowns to fit your server needs.</p> 
 
 ### Example:
-<i>placeholder</i>
+<img src="images/get.gif" alt="gif of obtaining a hearthstone" style="width: 65%">
+
+> #### Obtaining a hearthstone.
+<br>
+<img src="images/sethome.gif" alt="gif of obtaining a hearthstone" style="width: 65%">
+
+> #### Setting a home and teleporting to it.
 
 ## Usage:
 
@@ -18,13 +24,13 @@ Hearthstone README
 
 #### Commands:
 - /hearthstone:get - gives the player a hearthstone, 1 per player<br>
-- /hearthstone:sethome - sets a location as the players home<br>
+- /hearthstone:sethome - sets a location as the player's home<br>
 - /hearthstone:reload - reloads the plugin configuration<br>
 
 #### Permissions:
 - hearthstone.get - permission to get a hearthstone
-- hearthstone.sethome - permission to set a new home
-- hearthstone.reload - permission to reload plugin config
+- hearthstone.sethome - permission to set up a new home
+- hearthstone.reload - permission to reload plugin config (admin only)
 - heathstone.use - <i><u>WIP</u></i>
 
 ## Planned Features:
