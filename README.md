@@ -9,7 +9,13 @@ Hearthstone README
 > Hearthstone features customizable cast times and cooldowns to fit your server needs.</p> 
 
 ### Example:
-<i>placeholder</i>
+<img src="images/get.gif" alt="gif of obtaining a hearthstone" style="width: 65%">
+
+> #### Obtaining a hearthstone.
+<br>
+<img src="images/sethome.gif" alt="gif of obtaining a hearthstone" style="width: 65%">
+
+> #### Setting a home and teleporting to it.
 
 ## Usage:
 
