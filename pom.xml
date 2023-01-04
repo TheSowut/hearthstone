@@ -6,12 +6,12 @@
 
     <groupId>io.github.TheSowut</groupId>
     <artifactId>Hearthstone</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>Hearthstone</name>
 
-    <description>Teleport with style</description>
+    <description>Bring the Hearthstone mechanic from WoW to Minecraft</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

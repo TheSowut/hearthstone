@@ -97,7 +97,7 @@ public class FileHelper {
      * @param file - File to be created.
      */
     private void createFile(File file) {
-        if (file.exists()) {
+        if (!file.exists()) {
             try {
                 file.createNewFile();
             } catch (IOException e) {
