@@ -76,6 +76,7 @@ public class HearthstoneHelper {
     }
 
     /**
+     * FIXME - https://github.com/TheSowut/hearthstone/issues/2
      * Indicate whether the player can invoke hearthstone commands.
      *
      * @param player - Player using Hearthstone.
