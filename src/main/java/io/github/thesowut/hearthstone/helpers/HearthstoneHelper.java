@@ -26,6 +26,7 @@ public class HearthstoneHelper {
     public final ItemStack hearthstoneItem = this.getHearthstone();
     public final Map<UUID, TeleportationState> playersBeingTeleported = new HashMap<>();
     public final Map<UUID, Integer> teleportationTasks = new HashMap<>();
+    public final Map<UUID, Integer> particleTasks = new HashMap<>();
     private final FileHelper _fileHelper;
     private final PluginHelper _pluginHelper;
     private final MovementListener _movementListener = new MovementListener(this);
@@ -69,48 +70,8 @@ public class HearthstoneHelper {
             if (playersBeingTeleported.size() < 1) {
                 _main.getServer().getPluginManager().registerEvents(_movementListener, _main);
             }
-            playersBeingTeleported.put(player.getUniqueId(), TeleportationState.STARTED);
-
-            int taskNumber = Bukkit.getScheduler().scheduleSyncDelayedTask(_main, () -> {
-                playersBeingTeleported.remove(player.getUniqueId());
-                teleportationTasks.remove(player.getUniqueId());
-
-                player.teleport(playerHomeLocation);
-                // Spawn particles when the player has successfully teleported and play a sound.
-                this.spawnParticle(
-                        playerWorld,
-                        playerHomeLocation,
-                        new Particle[]{Particle.SPELL_WITCH},
-                        1,
-                        true
-                );
-
-                playerWorld.playSound(playerHomeLocation, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
-                _pluginHelper.sendTeleportationMessage(player, TeleportationState.SUCCESS);
-
-                // Save the cooldown delay for the user.
-                _fileHelper.getCooldowns().set(String.valueOf(player.getUniqueId()),
-                        System.currentTimeMillis() + cooldown);
-                _fileHelper.saveCooldowns();
-
-                // If there are no players using the hearthstone, remove the listener.
-                if (playersBeingTeleported.size() < 1) {
-                    HandlerList.unregisterAll(_movementListener);
-                }
-            }, 20 * castTime);
-
-            _pluginHelper.sendTeleportationMessage(player, TeleportationState.STARTED);
-            teleportationTasks.put(player.getUniqueId(), taskNumber);
-
-            // Spawn particles around player during the cast and play a casting sound.
-            this.spawnParticle(
-                    playerWorld,
-                    playerLocation,
-                    new Particle[]{Particle.VILLAGER_HAPPY},
-                    1,
-                    true
-            );
-            playerWorld.playSound(playerLocation, Sound.BLOCK_BREWING_STAND_BREW, 1.0f, 1.0f);
+            createPlayerTeleportationTask(playerHomeLocation, player, castTime, cooldown, playerWorld);
+            createTeleportationParticlesTask(player, playerLocation, playerWorld);
         }
     }
 
@@ -142,13 +103,9 @@ public class HearthstoneHelper {
      */
     public void cancelTeleportation(Player player) {
         if (!isUsingHearthstone(player)) return;
-
-        final int taskId = this.teleportationTasks.get(player.getUniqueId());
-        _main.getServer().getScheduler().cancelTask(taskId);
         _pluginHelper.sendTeleportationMessage(player, TeleportationState.CANCELED);
 
-        playersBeingTeleported.remove(player.getUniqueId());
-        teleportationTasks.remove(player.getUniqueId());
+        this.removePlayerFromTasks(player);
         if (playersBeingTeleported.size() < 1) {
             HandlerList.unregisterAll(_movementListener);
         }
@@ -193,21 +150,20 @@ public class HearthstoneHelper {
     }
 
     /**
-     *
-     * @param world - World of Player
-     * @param location - Location of Player
-     * @param particle - List of Particles to be spawn
+     * @param world         - World of Player
+     * @param location      - Location of Player
+     * @param particles     - List of Particles to be spawn
      * @param particleCount - Number of Particles to be Spawned
-     * @param isRotating - Indicates whether Particles should surround the Player
+     * @param isRotating    - Indicates whether Particles should surround the Player
      */
-    public void spawnParticle(World world, Location location, Particle[] particle, int particleCount, boolean isRotating) {
+    public void spawnParticle(World world, Location location, Particle[] particles, int particleCount, boolean isRotating) {
         if (isRotating) {
             for (int i = 0; i < 360; i += 20) {
                 double angle = i * Math.PI / 180;
                 double x = Math.cos(angle);
                 double z = Math.sin(angle);
-                for (Particle p : particle) {
-                    world.spawnParticle(p, location.getX() + x, location.getY() + 1, location.getZ() + z,
+                for (Particle particle : particles) {
+                    world.spawnParticle(particle, location.getX() + x, location.getY() + 1, location.getZ() + z,
                             0, 0, 0, 0, particleCount
                     );
                 }
@@ -215,8 +171,91 @@ public class HearthstoneHelper {
             return;
         }
 
-        for (Particle p : particle) {
+        for (Particle p : particles) {
             world.spawnParticle(p, location, particleCount);
         }
+    }
+
+    /**
+     * TODO
+     *
+     * @param player
+     * @param playerLocation
+     * @param playerWorld
+     */
+    private void createTeleportationParticlesTask(Player player, Location playerLocation, World playerWorld) {
+        int taskNumber2 = Bukkit.getScheduler().scheduleSyncRepeatingTask(_main, () -> {
+            // Spawn particles around player during the cast and play a casting sound.
+            this.spawnParticle(
+                    playerWorld,
+                    playerLocation,
+                    new Particle[]{Particle.VILLAGER_HAPPY},
+                    1,
+                    true
+            );
+            playerWorld.playSound(playerLocation, Sound.BLOCK_NOTE_BLOCK_CHIME, 1.0f, 1.0f);
+
+        }, 0, 20 * 5);
+
+        particleTasks.put(player.getUniqueId(), taskNumber2);
+    }
+
+    /**
+     * TODO
+     *
+     * @param playerHomeLocation
+     * @param player
+     * @param castTime
+     * @param cooldown
+     * @param playerWorld
+     */
+    private void createPlayerTeleportationTask(Location playerHomeLocation, Player player, long castTime, long cooldown, World playerWorld) {
+        playersBeingTeleported.put(player.getUniqueId(), TeleportationState.STARTED);
+
+        int taskNumber = Bukkit.getScheduler().scheduleSyncDelayedTask(_main, () -> {
+            this.removePlayerFromTasks(player);
+            player.teleport(playerHomeLocation);
+            // Spawn particles when the player has successfully teleported and play a sound.
+            this.spawnParticle(
+                    playerWorld,
+                    playerHomeLocation,
+                    new Particle[]{Particle.SPELL_WITCH},
+                    1,
+                    true
+            );
+
+            playerWorld.playSound(playerHomeLocation, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+            _pluginHelper.sendTeleportationMessage(player, TeleportationState.SUCCESS);
+
+            // Save the cooldown delay for the user.
+            _fileHelper.getCooldowns().set(String.valueOf(player.getUniqueId()),
+                    System.currentTimeMillis() + cooldown);
+            _fileHelper.saveCooldowns();
+
+            // If there are no players using the hearthstone, remove the listener.
+            if (playersBeingTeleported.size() < 1) {
+                HandlerList.unregisterAll(_movementListener);
+            }
+        }, 20 * castTime);
+
+        _pluginHelper.sendTeleportationMessage(player, TeleportationState.STARTED);
+        teleportationTasks.put(player.getUniqueId(), taskNumber);
+    }
+
+    /**
+     * When teleport is canceled or finished, remove the player from the tasks.
+     *
+     * @param player - Teleported player or player who cancelled teleportation
+     */
+    private void removePlayerFromTasks(Player player) {
+        final int tpTaskId = this.teleportationTasks.get(player.getUniqueId());
+        final int particleTaskId = this.particleTasks.get(player.getUniqueId());
+
+        _main.getServer().getScheduler().cancelTask(tpTaskId);
+        _main.getServer().getScheduler().cancelTask(particleTaskId);
+
+        playersBeingTeleported.remove(player.getUniqueId());
+        teleportationTasks.remove(player.getUniqueId());
+        particleTasks.remove(player.getUniqueId());
     }
 }
