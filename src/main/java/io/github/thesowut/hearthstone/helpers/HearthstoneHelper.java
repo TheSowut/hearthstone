@@ -77,6 +77,7 @@ public class HearthstoneHelper {
                 player.teleport(playerHomeLocation);
                 _pluginHelper.sendTeleportationMessage(player, TeleportationState.SUCCESS);
                 w.spawnParticle(Particle.FIREWORKS_SPARK, playerHomeLocation, 10);
+                w.playSound(playerHomeLocation, Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
 
                 // Save the cooldown delay for the user.
                 _fileHelper.getCooldowns().set(String.valueOf(player.getUniqueId()),
@@ -92,6 +93,7 @@ public class HearthstoneHelper {
             _pluginHelper.sendTeleportationMessage(player, TeleportationState.STARTED);
             teleportationTasks.put(player.getUniqueId(), taskNumber);
             w.spawnParticle(Particle.CAMPFIRE_SIGNAL_SMOKE, player.getLocation(), 20);
+            w.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG, 1.0f, 1.0f);
         }
     }
 
