@@ -60,7 +60,8 @@ public class HearthstoneHelper {
         Player player = event.getPlayer();
         long castTime = this.getCastTime();
         long cooldown = this.getCooldown();
-        World w = player.getWorld();
+        Location playerLocation = player.getLocation();
+        World playerWorld = player.getWorld();
 
         if (event.getItem() != null) {
             // Attach a new listener for player movement.
@@ -75,9 +76,17 @@ public class HearthstoneHelper {
                 teleportationTasks.remove(player.getUniqueId());
 
                 player.teleport(playerHomeLocation);
+                // Spawn particles when the player has successfully teleported and play a sound.
+                this.spawnParticle(
+                        playerWorld,
+                        playerHomeLocation,
+                        new Particle[]{Particle.SPELL_WITCH},
+                        1,
+                        true
+                );
+
+                playerWorld.playSound(playerHomeLocation, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
                 _pluginHelper.sendTeleportationMessage(player, TeleportationState.SUCCESS);
-                w.spawnParticle(Particle.FIREWORKS_SPARK, playerHomeLocation, 10);
-                w.playSound(playerHomeLocation, Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
 
                 // Save the cooldown delay for the user.
                 _fileHelper.getCooldowns().set(String.valueOf(player.getUniqueId()),
@@ -92,8 +101,16 @@ public class HearthstoneHelper {
 
             _pluginHelper.sendTeleportationMessage(player, TeleportationState.STARTED);
             teleportationTasks.put(player.getUniqueId(), taskNumber);
-            w.spawnParticle(Particle.CAMPFIRE_SIGNAL_SMOKE, player.getLocation(), 20);
-            w.playSound(player.getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG, 1.0f, 1.0f);
+
+            // Spawn particles around player during the cast and play a casting sound.
+            this.spawnParticle(
+                    playerWorld,
+                    playerLocation,
+                    new Particle[]{Particle.VILLAGER_HAPPY},
+                    1,
+                    true
+            );
+            playerWorld.playSound(playerLocation, Sound.BLOCK_BREWING_STAND_BREW, 1.0f, 1.0f);
         }
     }
 
@@ -173,5 +190,33 @@ public class HearthstoneHelper {
     public long getCooldown() {
         int cooldown = (int) _main.getConfig().get("cooldown");
         return TimeUnit.SECONDS.toMillis(cooldown);
+    }
+
+    /**
+     *
+     * @param world - World of Player
+     * @param location - Location of Player
+     * @param particle - List of Particles to be spawn
+     * @param particleCount - Number of Particles to be Spawned
+     * @param isRotating - Indicates whether Particles should surround the Player
+     */
+    public void spawnParticle(World world, Location location, Particle[] particle, int particleCount, boolean isRotating) {
+        if (isRotating) {
+            for (int i = 0; i < 360; i += 20) {
+                double angle = i * Math.PI / 180;
+                double x = Math.cos(angle);
+                double z = Math.sin(angle);
+                for (Particle p : particle) {
+                    world.spawnParticle(p, location.getX() + x, location.getY() + 1, location.getZ() + z,
+                            0, 0, 0, 0, particleCount
+                    );
+                }
+            }
+            return;
+        }
+
+        for (Particle p : particle) {
+            world.spawnParticle(p, location, particleCount);
+        }
     }
 }
