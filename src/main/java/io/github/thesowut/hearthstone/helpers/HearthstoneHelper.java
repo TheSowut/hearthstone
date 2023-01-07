@@ -2,10 +2,7 @@ package io.github.thesowut.hearthstone.helpers;
 
 import io.github.thesowut.hearthstone.handler.Hearthstone;
 import io.github.thesowut.hearthstone.listeners.MovementListener;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -63,6 +60,7 @@ public class HearthstoneHelper {
         Player player = event.getPlayer();
         long castTime = this.getCastTime();
         long cooldown = this.getCooldown();
+        World w = player.getWorld();
 
         if (event.getItem() != null) {
             // Attach a new listener for player movement.
@@ -78,6 +76,7 @@ public class HearthstoneHelper {
 
                 player.teleport(playerHomeLocation);
                 _pluginHelper.sendTeleportationMessage(player, TeleportationState.SUCCESS);
+                w.spawnParticle(Particle.FIREWORKS_SPARK, playerHomeLocation, 10);
 
                 // Save the cooldown delay for the user.
                 _fileHelper.getCooldowns().set(String.valueOf(player.getUniqueId()),
@@ -92,6 +91,7 @@ public class HearthstoneHelper {
 
             _pluginHelper.sendTeleportationMessage(player, TeleportationState.STARTED);
             teleportationTasks.put(player.getUniqueId(), taskNumber);
+            w.spawnParticle(Particle.CAMPFIRE_SIGNAL_SMOKE, player.getLocation(), 20);
         }
     }
 
