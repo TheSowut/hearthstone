@@ -29,8 +29,6 @@ public class InteractionListener implements Listener {
         if (!this.isAbleToHearthstone(player, homeLocation)) return;
 
         // TODO
-        // Add particles when using hearthstone
-        // Add channeling
         // make item undroppable
 
         _hearthstoneHelper.teleportPlayer(event, homeLocation);

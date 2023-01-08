@@ -153,7 +153,7 @@ public class HearthstoneHelper {
     /**
      * @param world         - World of Player
      * @param location      - Location of Player
-     * @param particles     - List of Particles to be spawn
+     * @param particles     - List of Particles to spawn
      * @param particleCount - Number of Particles to be Spawned
      * @param isRotating    - Indicates whether Particles should surround the Player
      */
@@ -178,11 +178,12 @@ public class HearthstoneHelper {
     }
 
     /**
-     * TODO
+     * Create a list of tasks that contain the player UUID and the task number.
+     * Used during hearthstone process.
      *
-     * @param player
-     * @param playerLocation
-     * @param playerWorld
+     * @param player - Player casting Hearthstone
+     * @param playerLocation - Current player location
+     * @param playerWorld - World in which the player is locate
      */
     private void createTeleportationParticlesTask(Player player, Location playerLocation, World playerWorld) {
         int taskNumber2 = Bukkit.getScheduler().scheduleSyncRepeatingTask(_main, () -> {
@@ -202,13 +203,13 @@ public class HearthstoneHelper {
     }
 
     /**
-     * TODO
+     * Create a list of tasks containing Player UUID & task number.
      *
-     * @param playerHomeLocation
-     * @param player
-     * @param castTime
-     * @param cooldown
-     * @param playerWorld
+     * @param playerHomeLocation - Location of player home
+     * @param player - Player casting Hearthstone
+     * @param castTime - Cast time of Hearthstone
+     * @param cooldown - Cooldown of Hearthstone
+     * @param playerWorld - World in which the player is located
      */
     private void createPlayerTeleportationTask(Location playerHomeLocation, Player player, long castTime, long cooldown, World playerWorld) {
         playersBeingTeleported.put(player.getUniqueId(), TeleportationState.STARTED);
