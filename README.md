@@ -13,7 +13,7 @@ Hearthstone README
 
 > #### Obtaining a hearthstone.
 <br>
-<img src="images/sethome.gif" alt="gif of obtaining a hearthstone" style="width: 65%">
+<img src="images/homeandtp.gif" alt="gif of obtaining a hearthstone" style="width: 65%">
 
 > #### Setting a home and teleporting to it.
 
