@@ -3,6 +3,7 @@ package io.github.thesowut.hearthstone.commands;
 import io.github.thesowut.hearthstone.helpers.FileHelper;
 import io.github.thesowut.hearthstone.helpers.HearthstoneHelper;
 import io.github.thesowut.hearthstone.helpers.PluginHelper;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -50,6 +51,8 @@ public class HearthstoneCommands implements CommandExecutor {
                 }
 
                 player.getInventory().addItem(_hearthstoneHelper.hearthstoneItem);
+                player.getWorld().playSound(player.getLocation(),
+                        Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
                 _pluginHelper.sendHearthstoneReceivedMessage(player);
                 break;
             case sethome:
