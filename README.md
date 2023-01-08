@@ -34,6 +34,6 @@ Hearthstone README
 - heathstone.use - <i><u>WIP</u></i>
 
 ## Planned Features:
-- Particles for casting & successful warp.
+- ✔️ Particles for casting & successful warp.
 - Casting bar to indicate hearthstone progress.
 - Ability for OPs to skip cast-time & cooldown.
