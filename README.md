@@ -31,9 +31,9 @@ Hearthstone README
 - hearthstone.get - permission to get a hearthstone
 - hearthstone.sethome - permission to set up a new home
 - hearthstone.reload - permission to reload plugin config (admin only)
-- heathstone.use - <i><u>WIP</u></i>
 
 ## Planned Features:
 - ✔️ Particles for casting & successful warp.
 - Casting bar to indicate hearthstone progress.
 - Ability for OPs to skip cast-time & cooldown.
+- Customizable animations for default & op players.
