@@ -11,6 +11,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public final class Hearthstone extends JavaPlugin {
     private final FileConfiguration _config = this.getConfig();
@@ -54,9 +55,11 @@ public final class Hearthstone extends JavaPlugin {
     }
 
     private void setDefaultConfig() {
-        // TODO add comment explanation
+        _config.options().setHeader(Collections.singletonList(
+                "cooldown - number of seconds of seconds which the hearthstone has to cool down after usage\n"
+                        + "# cast_time - number of seconds during which the hearthstone is channeled"
+        ));
         _config.addDefault(String.valueOf(FileHelper.Configuration.cooldown), 120);
-        // TODO add comment explanation
         _config.addDefault(String.valueOf(FileHelper.Configuration.cast_time), 5);
         _config.options().copyDefaults(true);
         saveConfig();
