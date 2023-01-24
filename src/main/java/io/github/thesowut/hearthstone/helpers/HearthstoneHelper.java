@@ -255,8 +255,7 @@ public class HearthstoneHelper {
         bar.addPlayer(player);
 
         int taskNumber = Bukkit.getScheduler().scheduleSyncRepeatingTask(_main, () -> {
-            // Spawn particles around player during the cast and play a casting sound.
-            bar.setProgress(bar.getProgress() + 0.1);
+            if (bar.getProgress() < 1.0) bar.setProgress(bar.getProgress() + 0.099);
         }, 0, 20 * castTime / 10);
 
         barTasks.put(player.getUniqueId(), taskNumber);
