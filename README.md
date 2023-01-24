@@ -33,6 +33,6 @@ Hearthstone README
 
 ## Planned Features:
 - ✔️ Particles for casting & successful warp.
-- Casting bar to indicate hearthstone progress.
+- 🚧 Casting bar to indicate hearthstone progress. - *In Progress*
 - Ability for OPs to skip cast-time & cooldown.
 - Customizable animations for default & op players.
