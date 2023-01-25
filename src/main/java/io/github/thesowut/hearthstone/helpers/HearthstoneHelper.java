@@ -256,7 +256,11 @@ public class HearthstoneHelper {
      * @param castTime  - Cast time of Hearthstone
      */
     private void createCastingBarTask(Player player, long castTime) {
-        castingBar = Bukkit.createBossBar("Teleporting", BarColor.GREEN, BarStyle.SEGMENTED_10);
+        castingBar = Bukkit.createBossBar(
+                ChatColor.DARK_GREEN + "Teleporting...",
+                BarColor.GREEN,
+                BarStyle.SEGMENTED_10
+        );
         castingBar.setProgress(0);
         castingBar.addPlayer(player);
 
@@ -285,6 +289,5 @@ public class HearthstoneHelper {
         teleportationTasks.remove(player.getUniqueId());
         particleTasks.remove(player.getUniqueId());
         barTasks.remove(player.getUniqueId());
-        castingBar.removePlayer(player);
     }
 }
