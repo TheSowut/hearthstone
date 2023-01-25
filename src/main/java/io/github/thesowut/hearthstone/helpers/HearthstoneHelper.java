@@ -31,11 +31,11 @@ public class HearthstoneHelper {
     public final Map<UUID, Integer> teleportationTasks = new HashMap<>();
     public final Map<UUID, Integer> particleTasks = new HashMap<>();
     public final Map<UUID, Integer> barTasks = new HashMap<>();
+    private final Map<UUID, BossBar> castingBars = new HashMap<>();
     private final FileHelper _fileHelper;
     private final PluginHelper _pluginHelper;
     private final MovementListener _movementListener = new MovementListener(this);
     private final Hearthstone _main;
-    private BossBar castingBar;
 
     public HearthstoneHelper(PluginHelper pluginHelper, FileHelper fileHelper, Hearthstone main) {
         this._pluginHelper = pluginHelper;
@@ -256,13 +256,14 @@ public class HearthstoneHelper {
      * @param castTime  - Cast time of Hearthstone
      */
     private void createCastingBarTask(Player player, long castTime) {
-        castingBar = Bukkit.createBossBar(
+        BossBar castingBar = Bukkit.createBossBar(
                 ChatColor.DARK_GREEN + "Teleporting...",
                 BarColor.GREEN,
                 BarStyle.SEGMENTED_10
         );
         castingBar.setProgress(0);
         castingBar.addPlayer(player);
+        castingBars.put(player.getUniqueId(), castingBar);
 
         int taskNumber = Bukkit.getScheduler().scheduleSyncRepeatingTask(_main, () -> {
             if (castingBar.getProgress() < 1.0) castingBar.setProgress(castingBar.getProgress() + 0.099);
@@ -289,5 +290,7 @@ public class HearthstoneHelper {
         teleportationTasks.remove(player.getUniqueId());
         particleTasks.remove(player.getUniqueId());
         barTasks.remove(player.getUniqueId());
+        castingBars.get(player.getUniqueId()).removePlayer(player);
+        castingBars.remove(player.getUniqueId());
     }
 }
