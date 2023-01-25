@@ -4,6 +4,9 @@ import io.github.thesowut.hearthstone.handler.Hearthstone;
 import io.github.thesowut.hearthstone.listeners.MovementListener;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -27,6 +30,8 @@ public class HearthstoneHelper {
     public final Map<UUID, TeleportationState> playersBeingTeleported = new HashMap<>();
     public final Map<UUID, Integer> teleportationTasks = new HashMap<>();
     public final Map<UUID, Integer> particleTasks = new HashMap<>();
+    public final Map<UUID, Integer> barTasks = new HashMap<>();
+    private final Map<UUID, BossBar> castingBars = new HashMap<>();
     private final FileHelper _fileHelper;
     private final PluginHelper _pluginHelper;
     private final MovementListener _movementListener = new MovementListener(this);
@@ -72,6 +77,7 @@ public class HearthstoneHelper {
             }
             createPlayerTeleportationTask(playerHomeLocation, player, castTime, cooldown, playerWorld);
             createTeleportationParticlesTask(player, playerLocation, playerWorld);
+            createCastingBarTask(player, castTime);
         }
     }
 
@@ -181,12 +187,12 @@ public class HearthstoneHelper {
      * Create a list of tasks that contain the player UUID and the task number.
      * Used during hearthstone process.
      *
-     * @param player - Player casting Hearthstone
+     * @param player         - Player casting Hearthstone
      * @param playerLocation - Current player location
-     * @param playerWorld - World in which the player is locate
+     * @param playerWorld    - World in which the player is located
      */
     private void createTeleportationParticlesTask(Player player, Location playerLocation, World playerWorld) {
-        int taskNumber2 = Bukkit.getScheduler().scheduleSyncRepeatingTask(_main, () -> {
+        int taskNumber = Bukkit.getScheduler().scheduleSyncRepeatingTask(_main, () -> {
             // Spawn particles around player during the cast and play a casting sound.
             this.spawnParticle(
                     playerWorld,
@@ -196,20 +202,19 @@ public class HearthstoneHelper {
                     true
             );
             playerWorld.playSound(playerLocation, Sound.BLOCK_NOTE_BLOCK_CHIME, 1.0f, 1.0f);
-
         }, 0, 20 * 5);
 
-        particleTasks.put(player.getUniqueId(), taskNumber2);
+        particleTasks.put(player.getUniqueId(), taskNumber);
     }
 
     /**
      * Create a list of tasks containing Player UUID & task number.
      *
      * @param playerHomeLocation - Location of player home
-     * @param player - Player casting Hearthstone
-     * @param castTime - Cast time of Hearthstone
-     * @param cooldown - Cooldown of Hearthstone
-     * @param playerWorld - World in which the player is located
+     * @param player             - Player casting Hearthstone
+     * @param castTime           - Cast time of Hearthstone
+     * @param cooldown           - Cooldown of Hearthstone
+     * @param playerWorld        - World in which the player is located
      */
     private void createPlayerTeleportationTask(Location playerHomeLocation, Player player, long castTime, long cooldown, World playerWorld) {
         playersBeingTeleported.put(player.getUniqueId(), TeleportationState.STARTED);
@@ -245,6 +250,29 @@ public class HearthstoneHelper {
     }
 
     /**
+     * Create a list of tasks that contain the player UUID and the task number.
+     *
+     * @param player    - Player casting Hearthstone
+     * @param castTime  - Cast time of Hearthstone
+     */
+    private void createCastingBarTask(Player player, long castTime) {
+        BossBar castingBar = Bukkit.createBossBar(
+                ChatColor.DARK_GREEN + "Teleporting...",
+                BarColor.GREEN,
+                BarStyle.SEGMENTED_10
+        );
+        castingBar.setProgress(0);
+        castingBar.addPlayer(player);
+        castingBars.put(player.getUniqueId(), castingBar);
+
+        int taskNumber = Bukkit.getScheduler().scheduleSyncRepeatingTask(_main, () -> {
+            if (castingBar.getProgress() < 1.0) castingBar.setProgress(castingBar.getProgress() + 0.099);
+        }, 0, 20 * castTime / 10);
+
+        barTasks.put(player.getUniqueId(), taskNumber);
+    }
+
+    /**
      * When teleport is canceled or finished, remove the player from the tasks.
      *
      * @param player - Teleported player or player who cancelled teleportation
@@ -252,12 +280,17 @@ public class HearthstoneHelper {
     private void removePlayerFromTasks(Player player) {
         final int tpTaskId = this.teleportationTasks.get(player.getUniqueId());
         final int particleTaskId = this.particleTasks.get(player.getUniqueId());
+        final int barTaskId = this.barTasks.get(player.getUniqueId());
 
         _main.getServer().getScheduler().cancelTask(tpTaskId);
         _main.getServer().getScheduler().cancelTask(particleTaskId);
+        _main.getServer().getScheduler().cancelTask(barTaskId);
 
         playersBeingTeleported.remove(player.getUniqueId());
         teleportationTasks.remove(player.getUniqueId());
         particleTasks.remove(player.getUniqueId());
+        barTasks.remove(player.getUniqueId());
+        castingBars.get(player.getUniqueId()).removePlayer(player);
+        castingBars.remove(player.getUniqueId());
     }
 }
