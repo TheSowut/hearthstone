@@ -73,16 +73,27 @@ public class PluginHelper {
      * @param player - Player using hearthstone
      */
     public void sendActiveCooldownMessage(Player player, long cooldown) {
+        final int HOUR_IN_MILLISECONDS = 3600000;
+        final int MINUTE_IN_MILLISECONDS = 60000;
+
         long now = System.currentTimeMillis();
         long timeLeft = cooldown - now;
-        String seconds = String.valueOf((timeLeft / 1000) % 60);
-        long minutes = (timeLeft / 1000) / 60;
+        long hours = ((timeLeft / (1000 * 60 * 60)) % 24);
+        long minutes = ((timeLeft / (1000 * 60)) % 60);
+        long seconds = (timeLeft / 1000) % 60;
 
-        if (minutes > 0) {
+        if (timeLeft >= HOUR_IN_MILLISECONDS) {
+            player.sendMessage(this.title + ChatColor.RED +
+                    "The Hearthstone cannot be used for another " + hours + " hours, " + minutes + " minutes and " + seconds + " seconds!");
+            return;
+        }
+
+        if (timeLeft > MINUTE_IN_MILLISECONDS) {
             player.sendMessage(this.title + ChatColor.RED +
                     "The Hearthstone cannot be used for another " + minutes + " minutes and " + seconds + " seconds!");
             return;
         }
+
         player.sendMessage(this.title + ChatColor.RED +
                 "The Hearthstone cannot be used for another " + seconds + " seconds!");
     }
